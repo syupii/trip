@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f3f0e7">
+<title>TRIP DECK｜11.21–22 行き先会議</title>
+<style>
+:root{
+  --paper:#f3f0e7;--ink:#1e2928;--muted:#65716d;--line:#d8d8cc;
+  --lime:#d8ff55;--orange:#ff795b;--blue:#8ed8e5;--purple:#c2b2ff;--yellow:#ffd86d;
+  --radius:24px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif}
+button,a{font:inherit}
+button{cursor:pointer}
+a{color:inherit}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:17px clamp(18px,5vw,70px);border-bottom:1px solid var(--line);font-size:11px;letter-spacing:.15em;text-transform:uppercase}
+.brand{font-weight:950;letter-spacing:.11em}.brand span{display:inline-block;background:var(--lime);padding:4px 7px;margin-right:8px;transform:rotate(-4deg)}
+.top-meta{color:var(--muted);text-align:right}
+.hero{position:relative;overflow:hidden;min-height:600px;background:#d9e3d5;padding:clamp(32px,6vw,76px) clamp(18px,7vw,100px) 46px;display:flex;align-items:center}
+.hero:before{content:"";position:absolute;width:540px;height:540px;border:1px solid #1e292822;border-radius:50%;right:-50px;top:-115px;box-shadow:0 0 0 38px #1e292808,0 0 0 78px #1e292806;animation:slowspin 45s linear infinite}
+.hero:after{content:"";position:absolute;width:320px;height:320px;background:var(--lime);border-radius:50%;right:8%;top:15%;opacity:.78;mix-blend-mode:multiply;animation:float 8s ease-in-out infinite alternate}
+.hero-inner{position:relative;z-index:2;max-width:1130px;width:100%;margin:auto}
+.hero-topline{font-size:12px;letter-spacing:.2em;font-weight:900;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.stamp{border:1px solid var(--ink);padding:7px 10px;transform:rotate(-2deg);display:inline-block}
+.hero h1{font-size:clamp(51px,9vw,112px);line-height:.91;letter-spacing:-.075em;margin:34px 0 22px;font-weight:1000;max-width:840px}
+.hero h1 .outline{color:transparent;-webkit-text-stroke:2px var(--ink);text-stroke:2px var(--ink)}
+.hero-sub{font-size:clamp(14px,2vw,18px);line-height:1.8;max-width:500px;font-weight:600}
+.trip-stats{display:flex;gap:9px;flex-wrap:wrap;margin-top:26px}
+.pill{border:1px solid var(--ink);border-radius:999px;padding:9px 13px;font-size:12px;font-weight:800;background:#ffffff7a}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:29px}
+.primary-btn,.secondary-btn{border:1px solid var(--ink);padding:14px 18px;border-radius:999px;font-weight:900;font-size:13px;transition:transform .2s,box-shadow .2s}
+.primary-btn{background:var(--ink);color:white;box-shadow:4px 4px 0 var(--lime)}
+.secondary-btn{background:transparent;color:var(--ink)}
+.primary-btn:hover,.secondary-btn:hover{transform:translateY(-3px)}
+.hero-art{position:absolute;right:10%;bottom:10%;z-index:2;font-size:clamp(66px,9vw,110px);filter:drop-shadow(8px 8px 0 #1e292817);transform:rotate(-7deg);animation:float 5s ease-in-out infinite alternate}
+.hero-art small{position:absolute;font-size:13px;letter-spacing:.12em;background:var(--orange);color:#fff;padding:8px 11px;border:1px solid var(--ink);border-radius:999px;right:-40px;bottom:0;white-space:nowrap;transform:rotate(9deg)}
+.ticker{overflow:hidden;background:var(--lime);border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);padding:10px 0;font-size:12px;letter-spacing:.15em;font-weight:1000;white-space:nowrap}
+.ticker-track{display:inline-block;animation:marquee 25s linear infinite}
+@keyframes marquee{to{transform:translateX(-50%)}}
+@keyframes float{to{transform:translateY(-13px) rotate(2deg)}}
+@keyframes slowspin{to{transform:rotate(360deg)}}
+main{max-width:1240px;margin:auto;padding:0 clamp(16px,4vw,48px) 70px}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:18px;margin:66px 0 22px}
+.kicker{font-size:11px;letter-spacing:.18em;color:var(--muted);font-weight:900}
+.section-head h2{font-size:clamp(29px,4vw,45px);letter-spacing:-.055em;line-height:1;margin:8px 0 0}
+.section-side{font-size:12px;line-height:1.8;color:var(--muted);max-width:320px}
+.mood-box{background:#fffdf7;border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:22px}
+.mood-head{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:14px}
+.mood-head strong{font-size:14px}.mood-head small{color:var(--muted)}
+.filters{display:flex;flex-wrap:wrap;gap:8px}
+.filter{border:1px solid var(--line);background:transparent;border-radius:999px;padding:9px 13px;font-size:12px;font-weight:800;transition:.2s}
+.filter.active,.filter:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.trip-card{position:relative;isolation:isolate;overflow:hidden;min-height:360px;padding:24px;border:1px solid var(--ink);border-radius:var(--radius);display:flex;flex-direction:column;transition:transform .25s,box-shadow .25s;animation:cardin .55s both}
+.trip-card:hover{transform:translateY(-5px);box-shadow:7px 8px 0 #1e29281a}
+.trip-card.hidden{display:none}
+.trip-card:nth-child(1){background:#cfe3df}
+.trip-card:nth-child(2){background:#f8cfb8}
+.trip-card:nth-child(3){background:#d8d0ef}
+.trip-card:nth-child(4){background:#dce7ac}
+.trip-card:nth-child(5){background:#c5deec}
+@keyframes cardin{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.card-top{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:11px;font-weight:950;letter-spacing:.12em}
+.card-no{border:1px solid var(--ink);padding:6px 8px;border-radius:6px;background:#ffffff75}
+.heart-toggle{border:1px solid var(--ink);background:#ffffff82;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:900;transition:.2s}
+.heart-toggle.selected{background:var(--lime);box-shadow:2px 2px 0 var(--ink)}
+.card-art{position:absolute;right:23px;top:50px;font-size:clamp(56px,7vw,86px);filter:drop-shadow(5px 5px 0 #1e292817);transform:rotate(6deg);z-index:-1}
+.card-orbit{position:absolute;width:155px;height:155px;right:0;top:25px;border:1px dashed #1e292855;border-radius:50%;z-index:-2}
+.trip-card h3{font-size:clamp(33px,4.3vw,47px);letter-spacing:-.06em;margin:49px 0 4px;line-height:1.02}
+.card-descr{font-size:13px;max-width:78%;line-height:1.7;font-weight:650;min-height:44px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:15px 0}
+.tag{background:#ffffff91;border:1px solid #1e292833;border-radius:5px;padding:5px 8px;font-size:10px;font-weight:800}
+.card-data{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto;padding:14px 0 14px;border-top:1px dashed #1e29284d}
+.card-data div{display:flex;flex-direction:column;gap:4px}
+.card-data span{font-size:10px;color:#44514d;font-weight:750}
+.card-data strong{font-size:17px;letter-spacing:-.03em}
+.card-data small{font-size:10px;font-weight:650;color:#56615b}
+.card-footer{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.recommend-reason{font-size:11px;font-weight:850;max-width:64%;line-height:1.5}
+.detail-btn{border:1px solid var(--ink);background:var(--ink);color:white;padding:11px 13px;border-radius:999px;font-size:11px;font-weight:900;white-space:nowrap;transition:.2s}
+.detail-btn:hover{background:var(--lime);color:var(--ink)}
+.compare-wrap{overflow:auto;border:1px solid var(--ink);border-radius:18px;background:#fffdf7}
+.compare{width:100%;border-collapse:collapse;min-width:690px;font-size:12px}
+.compare th,.compare td{padding:15px 16px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+.compare th{background:#e7e8dd;font-size:10px;letter-spacing:.08em}
+.compare tr:last-child td{border-bottom:0}
+.compare td:first-child{font-weight:950}
+.compare .mini-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--orange);margin-right:7px}
+.compare-note{font-size:11px;color:var(--muted);margin-top:10px;line-height:1.7}
+.selection{margin-top:70px;background:var(--ink);color:#fff;padding:clamp(22px,4vw,38px);border-radius:28px;position:relative;overflow:hidden}
+.selection:after{content:"✓";position:absolute;right:25px;top:-36px;font-size:180px;color:#ffffff0d;font-weight:1000;pointer-events:none}
+.selection-head{display:flex;justify-content:space-between;gap:15px;align-items:end;position:relative;z-index:1}
+.selection h2{font-size:clamp(29px,4vw,42px);letter-spacing:-.06em;margin:8px 0}
+.selection p{font-size:12px;color:#c7d0c9;line-height:1.8;margin:0}
+.count{background:var(--lime);color:var(--ink);padding:9px 12px;border-radius:999px;font-size:12px;font-weight:950;white-space:nowrap}
+.selected-list{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0;position:relative;z-index:1}
+.selected-chip{border:1px solid #ffffff55;border-radius:999px;padding:9px 12px;font-size:12px;background:#ffffff12}
+.empty-state{border:1px dashed #ffffff45;color:#bfc8c2;padding:17px;border-radius:14px;font-size:12px;width:100%}
+.selection-actions{display:flex;gap:9px;flex-wrap:wrap;position:relative;z-index:1}
+.copy-btn,.clear-btn{padding:12px 15px;border-radius:999px;font-size:12px;font-weight:900;border:1px solid var(--lime)}
+.copy-btn{background:var(--lime);color:var(--ink)}.clear-btn{background:transparent;color:white;border-color:#ffffff60}
+.copy-hint{min-height:20px;font-size:11px;color:var(--lime);margin-top:13px;position:relative;z-index:1}
+.notes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:30px}
+.note{border-top:2px solid var(--ink);padding:14px 2px}
+.note b{display:block;font-size:13px;margin-bottom:6px}.note span{font-size:11px;line-height:1.8;color:var(--muted)}
+.footer{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:55px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:10px;line-height:1.8}
+.modal{display:none;position:fixed;inset:0;z-index:50;background:#182321b8;backdrop-filter:blur(5px);padding:16px;align-items:center;justify-content:center}
+.modal.open{display:flex}
+.modal-dialog{width:min(800px,100%);max-height:90vh;overflow:auto;background:var(--paper);border:1px solid var(--ink);border-radius:26px;box-shadow:0 25px 80px #0004;animation:pop .28s ease}
+@keyframes pop{from{opacity:0;transform:translateY(15px) scale(.98)}to{opacity:1;transform:none}}
+.modal-banner{position:relative;padding:25px clamp(20px,4vw,34px) 27px;border-bottom:1px solid var(--ink);overflow:hidden}
+.modal-banner h2{font-size:clamp(36px,7vw,57px);margin:13px 0 8px;letter-spacing:-.07em;line-height:1}
+.modal-banner p{font-size:13px;line-height:1.8;max-width:600px;margin:0}
+.modal-banner .modal-emoji{position:absolute;right:28px;top:22px;font-size:67px;opacity:.9;transform:rotate(7deg)}
+.modal-close{position:absolute;top:15px;right:15px;background:#ffffffbb;border:1px solid var(--ink);border-radius:50%;width:35px;height:35px;font-size:19px;z-index:2}
+.modal-content{padding:clamp(18px,4vw,32px)}
+.detail-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+.detail-stat{background:#fffdf7;border:1px solid var(--line);padding:14px;border-radius:15px}
+.detail-stat span{display:block;color:var(--muted);font-size:10px;font-weight:800;margin-bottom:5px}
+.detail-stat strong{font-size:19px;letter-spacing:-.04em}
+.detail-stat small{display:block;color:var(--muted);font-size:10px;margin-top:4px}
+.why{background:var(--lime);padding:17px 18px;border:1px solid var(--ink);border-radius:15px;margin-bottom:25px}
+.why b{display:block;margin-bottom:6px;font-size:12px;letter-spacing:.08em}.why p{font-size:13px;line-height:1.8;margin:0}
+.detail-section h3{font-size:19px;letter-spacing:-.04em;margin:24px 0 12px}
+.timeline{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.timeline article{border:1px solid var(--line);background:#fffdf7;padding:17px;border-radius:16px}
+.timeline .day-label{font-size:10px;font-weight:950;letter-spacing:.1em;color:var(--muted)}
+.timeline h4{font-size:15px;margin:7px 0 10px}
+.timeline ul{padding-left:17px;font-size:12px;line-height:1.9;margin:0}
+.caution{border-left:3px solid var(--orange);padding:12px 15px;background:#ff795b14;font-size:12px;line-height:1.9;margin-top:17px}
+.link-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.official-link{display:inline-block;border:1px solid var(--ink);border-radius:999px;padding:9px 13px;text-decoration:none;font-size:11px;font-weight:850;background:#fffdf7}
+.modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px;padding-top:20px;border-top:1px solid var(--line)}
+.modal-actions button{border:1px solid var(--ink);padding:12px 15px;border-radius:999px;font-weight:900;font-size:12px}
+.modal-fav{background:var(--lime)}.modal-fav.selected{background:var(--ink);color:white}.modal-done{background:transparent}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);opacity:0;background:var(--ink);color:white;padding:12px 18px;border-radius:999px;font-size:12px;font-weight:800;z-index:80;pointer-events:none;transition:.25s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:760px){
+ .hero{min-height:620px;align-items:flex-start;padding-top:70px}
+ .hero:after{right:-5%;top:auto;bottom:5%;width:220px;height:220px}
+ .hero-art{right:9%;bottom:10%;font-size:74px}
+ .cards{grid-template-columns:1fr}
+ .trip-card{min-height:340px}
+ .section-head{align-items:start;flex-direction:column;margin-top:50px}
+ .section-side{max-width:100%}
+ .notes{grid-template-columns:1fr}
+ .detail-stats{grid-template-columns:1fr 1fr}
+ .detail-stat:last-child{grid-column:1 / -1}
+ .timeline{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span>TD</span>TRIP DECK</div>
+  <div class="top-meta">WEEKEND EDITION / NO. 01<br>2026.11.21 SAT — 11.22 SUN</div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-topline"><span class="stamp">2 DAYS / 1 NIGHT</span><span>DEPARTURE : TOKYO</span><span>TRAVELERS : 2</span></div>
+    <h1>行き先、<br><span class="outline">まだ決めない。</span></h1>
+    <p class="hero-sub">5つの旅プランを並べてみた。<br>気になるものを開いて、比べて、候補に入れていこう。</p>
+    <div class="trip-stats">
+      <span class="pill">📅 11/21（土）– 11/22（日）</span>
+      <span class="pill">🚉 東京発</span>
+      <span class="pill">🧭 1泊2日</span>
+    </div>
+    <div class="hero-actions">
+      <button class="primary-btn" onclick="document.getElementById('destinations').scrollIntoView({behavior:'smooth'})">候補を見にいく ↓</button>
+      <button class="secondary-btn" onclick="roulette()">🎲 行き先ガチャ</button>
+    </div>
+  </div>
+  <div class="hero-art" aria-hidden="true">🚉<small>WHERE TO NEXT?</small></div>
+</section>
+<div class="ticker"><div class="ticker-track"> ✳ FIND YOUR ROUTE　✳ EAT SOMETHING GOOD　✳ TAKE THE SCENIC WAY　✳ 1 NIGHT / 2 DAYS　✳ PICK YOUR NEXT STOP　✳ FIND YOUR ROUTE　✳ EAT SOMETHING GOOD　✳ TAKE THE SCENIC WAY　✳ 1 NIGHT / 2 DAYS　✳ PICK YOUR NEXT STOP　</div></div>
+
+<main>
+  <div class="section-head" id="destinations">
+    <div><div class="kicker">01 / DESTINATION LINEUP</div><h2>今回の候補は、この5つ。</h2></div>
+    <div class="section-side">おすすめ順位はつけていません。<br>「何をしたいか」と「どのくらい移動したいか」で選べるように整理。</div>
+  </div>
+
+  <div class="mood-box">
+    <div class="mood-head"><strong>今の気分でしぼり込む</strong><small>タップすると候補が切り替わる</small></div>
+    <div class="filters" id="filters">
+      <button class="filter active" data-filter="all">全部見る</button>
+      <button class="filter" data-filter="温泉">温泉に入りたい</button>
+      <button class="filter" data-filter="食べ歩き">ご当地グルメ</button>
+      <button class="filter" data-filter="自然">自然・景色</button>
+      <button class="filter" data-filter="街歩き">街を歩きたい</button>
+      <button class="filter" data-filter="遠出">遠くまで行きたい</button>
+    </div>
+  </div>
+
+  <section class="cards" id="cards">
+    <article class="trip-card" data-id="kyoto" data-tags="食べ歩き 街歩き 遠出">
+      <div class="card-top"><span class="card-no">PLAN 01 / KANSAI</span><button class="heart-toggle" data-select="kyoto">＋ 気になる</button></div>
+      <div class="card-art" aria-hidden="true">🏯</div><div class="card-orbit"></div>
+      <h3>京都</h3>
+      <div class="card-descr">寺社も、路地も、甘いものも。街歩きをたっぷり楽しむプラン。</div>
+      <div class="tags"><span class="tag">紅葉・庭園</span><span class="tag">カフェ・甘味</span><span class="tag">王道観光</span></div>
+      <div class="card-data"><div><span>東京から片道</span><strong>約2時間20分</strong><small>新幹線・京都駅まで</small></div><div><span>予算の目安 / 1人</span><strong>4〜6万円</strong><small>交通・宿・食事込み</small></div></div>
+      <div class="card-footer"><div class="recommend-reason">ここがポイント：観光と食べ歩きの選択肢が多い</div><button class="detail-btn" data-open="kyoto">旅の中身 ↗</button></div>
+    </article>
+
+    <article class="trip-card" data-id="hakone" data-tags="温泉 自然 食べ歩き">
+      <div class="card-top"><span class="card-no">PLAN 02 / HOT SPRING</span><button class="heart-toggle" data-select="hakone">＋ 気になる</button></div>
+      <div class="card-art" aria-hidden="true">♨️</div><div class="card-orbit"></div>
+      <h3>箱根・伊豆</h3>
+      <div class="card-descr">温泉を中心に、湖・海・乗り物を組み合わせるリセット旅。</div>
+      <div class="tags"><span class="tag">温泉</span><span class="tag">湖・海</span><span class="tag">のんびり</span></div>
+      <div class="card-data"><div><span>東京から片道</span><strong>約1.5〜2.5時間</strong><small>エリア・交通手段による</small></div><div><span>予算の目安 / 1人</span><strong>2.5〜4.5万円</strong><small>交通・宿・食事込み</small></div></div>
+      <div class="card-footer"><div class="recommend-reason">ここがポイント：移動時間を抑えて現地時間を確保</div><button class="detail-btn" data-open="hakone">旅の中身 ↗</button></div>
+    </article>
+
+    <article class="trip-card" data-id="kanazawa" data-tags="食べ歩き 街歩き">
+      <div class="card-top"><span class="card-no">PLAN 03 / HOKURIKU</span><button class="heart-toggle" data-select="kanazawa">＋ 気になる</button></div>
+      <div class="card-art" aria-hidden="true">🍣</div><div class="card-orbit"></div>
+      <h3>金沢</h3>
+      <div class="card-descr">市場で海鮮、茶屋街で食べ歩き。街の見どころをまとめて回る。</div>
+      <div class="tags"><span class="tag">海鮮</span><span class="tag">茶屋街</span><span class="tag">和菓子</span></div>
+      <div class="card-data"><div><span>東京から片道</span><strong>約2時間30分</strong><small>北陸新幹線</small></div><div><span>予算の目安 / 1人</span><strong>3.5〜5万円</strong><small>交通・宿・食事込み</small></div></div>
+      <div class="card-footer"><div class="recommend-reason">ここがポイント：グルメも街歩きも駅周辺から展開しやすい</div><button class="detail-btn" data-open="kanazawa">旅の中身 ↗</button></div>
+    </article>
+
+    <article class="trip-card" data-id="nagano" data-tags="自然 温泉 街歩き">
+      <div class="card-top"><span class="card-no">PLAN 04 / MOUNTAIN</span><button class="heart-toggle" data-select="nagano">＋ 気になる</button></div>
+      <div class="card-art" aria-hidden="true">🌲</div><div class="card-orbit"></div>
+      <h3>長野・戸隠</h3>
+      <div class="card-descr">森の参道、そば、山の景色。街から少し離れて自然の中へ。</div>
+      <div class="tags"><span class="tag">自然・紅葉</span><span class="tag">神社</span><span class="tag">そば</span></div>
+      <div class="card-data"><div><span>東京から片道</span><strong>約1.5時間＋α</strong><small>長野駅まで新幹線＋現地移動</small></div><div><span>予算の目安 / 1人</span><strong>2.5〜4.5万円</strong><small>交通・宿・食事込み</small></div></div>
+      <div class="card-footer"><div class="recommend-reason">ここがポイント：森や山の景色で旅の空気がガラッと変わる</div><button class="detail-btn" data-open="nagano">旅の中身 ↗</button></div>
+    </article>
+
+    <article class="trip-card" data-id="hiroshima" data-tags="食べ歩き 遠出 街歩き 自然">
+      <div class="card-top"><span class="card-no">PLAN 05 / SETOUCHI</span><button class="heart-toggle" data-select="hiroshima">＋ 気になる</button></div>
+      <div class="card-art" aria-hidden="true">⛴️</div><div class="card-orbit"></div>
+      <h3>広島・宮島</h3>
+      <div class="card-descr">新幹線で遠くまで。島の散策と広島グルメをまとめて楽しむ。</div>
+      <div class="tags"><span class="tag">宮島・船</span><span class="tag">お好み焼き</span><span class="tag">遠出</span></div>
+      <div class="card-data"><div><span>東京から片道</span><strong>約4時間</strong><small>新幹線・広島駅まで</small></div><div><span>予算の目安 / 1人</span><strong>4.5〜6.5万円</strong><small>交通・宿・食事込み</small></div></div>
+      <div class="card-footer"><div class="recommend-reason">ここがポイント：島・船・街グルメで旅の要素が多い</div><button class="detail-btn" data-open="hiroshima">旅の中身 ↗</button></div>
+    </article>
+  </section>
+
+  <div class="section-head">
+    <div><div class="kicker">02 / QUICK COMPARISON</div><h2>ざっくり比較シート。</h2></div>
+    <div class="section-side">移動時間・予算は計画を立てるための概算です。予約前に運賃や宿泊料金を確認してください。</div>
+  </div>
+  <div class="compare-wrap">
+    <table class="compare">
+      <thead><tr><th>候補</th><th>移動のメイン</th><th>旅の主役</th><th>予算 / 1人</th><th>事前に考えること</th></tr></thead>
+      <tbody>
+        <tr><td><span class="mini-dot"></span>京都</td><td>新幹線</td><td>寺社・街歩き・甘味</td><td>4〜6万円</td><td>紅葉時期の混雑・宿代</td></tr>
+        <tr><td><span class="mini-dot"></span>箱根・伊豆</td><td>特急・在来線／車</td><td>温泉・湖や海</td><td>2.5〜4.5万円</td><td>箱根か伊豆かを先に決める</td></tr>
+        <tr><td><span class="mini-dot"></span>金沢</td><td>北陸新幹線</td><td>海鮮・茶屋街・庭園</td><td>3.5〜5万円</td><td>行きたい店の営業時間</td></tr>
+        <tr><td><span class="mini-dot"></span>長野・戸隠</td><td>新幹線＋バス／レンタカー</td><td>森・神社・そば</td><td>2.5〜4.5万円</td><td>現地の移動手段・寒さ</td></tr>
+        <tr><td><span class="mini-dot"></span>広島・宮島</td><td>新幹線＋船</td><td>島・神社・ご当地グルメ</td><td>4.5〜6.5万円</td><td>早め出発で現地時間を確保</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="compare-note">予算は1人あたりの交通・宿泊・食事などを含むラフな想定。宿のランクや予約タイミングで大きく変わります。特に11/21（土）は紅葉シーズンのため、宿泊先は先に空室・料金を確認すると安心です。</div>
+
+  <section class="selection" id="selection">
+    <div class="selection-head">
+      <div><div class="kicker" style="color:#c0cec7">03 / SHORTLIST</div><h2>気になる候補を集めよう。</h2><p>カードの「＋ 気になる」を押すと、ここに追加されます。<br>候補をコピーして、そのままLINEで相談できます。</p></div>
+      <div class="count" id="count">0 / 5 選択中</div>
+    </div>
+    <div class="selected-list" id="selectedList"><div class="empty-state">まだ候補はありません。カードから気になる場所を追加してみてください。</div></div>
+    <div class="selection-actions"><button class="copy-btn" id="copyBtn">候補をコピー ↗</button><button class="clear-btn" id="clearBtn">選択をリセット</button></div>
+    <div class="copy-hint" id="copyHint" aria-live="polite"></div>
+  </section>
+
+  <div class="notes">
+    <div class="note"><b>01 / 予算は幅で見る</b><span>交通・宿・食事の概算。紅葉の時期は宿泊料金が変動するため、候補が絞れたら実際の料金で比較。</span></div>
+    <div class="note"><b>02 / 1泊なら詰めこみすぎない</b><span>移動時間が長い場所は、行きたいエリアを2〜3個に絞ると現地でゆっくりできます。</span></div>
+    <div class="note"><b>03 / 日程が近づいたら確認</b><span>列車の空席・宿の料金・施設の営業時間・紅葉ライトアップ・船の運航は、予約前に公式情報を確認。</span></div>
+  </div>
+  <footer class="footer"><span>TRIP DECK / WEEKEND EDITION</span><span>11.21 SAT — 11.22 SUN, 2026<br>移動時間は東京エリアからの目安。予算は概算です。</span></footer>
+</main>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-dialog">
+    <div class="modal-banner" id="modalBanner"><button class="modal-close" id="modalClose" aria-label="閉じる">×</button><div class="kicker" id="modalKicker">PLAN</div><div class="modal-emoji" id="modalEmoji" aria-hidden="true">🏯</div><h2 id="modalTitle">京都</h2><p id="modalLead"></p></div>
+    <div class="modal-content">
+      <div class="detail-stats">
+        <div class="detail-stat"><span>東京から片道</span><strong id="modalTime"></strong><small id="modalRoute"></small></div>
+        <div class="detail-stat"><span>予算目安 / 1人</span><strong id="modalBudget"></strong><small>交通・宿・食事を含む概算</small></div>
+        <div class="detail-stat"><span>この旅の主役</span><strong id="modalFocus" style="font-size:15px"></strong><small id="modalVibe"></small></div>
+      </div>
+      <div class="why"><b>WHY THIS PLAN?</b><p id="modalWhy"></p></div>
+      <div class="detail-section"><h3>1泊2日の流れ（モデル案）</h3><div class="timeline" id="modalTimeline"></div></div>
+      <div class="caution" id="modalCaution"></div>
+      <div class="link-row"><a id="modalLink" class="official-link" href="#" target="_blank" rel="noopener">アクセス情報を確認 ↗</a></div>
+      <div class="modal-actions"><button class="modal-fav" id="modalFav">＋ 気になるに追加</button><button class="modal-done" id="modalDone">閉じる</button></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const places = {
+ kyoto:{
+  id:'kyoto',name:'京都',no:'PLAN 01 / KANSAI',emoji:'🏯',color:'#cfe3df',
+  lead:'寺社・庭園・路地・甘味。定番も寄り道も入れやすく、街歩きを中心に組み立てるプラン。',
+  time:'約2時間20分',route:'東海道新幹線／東京→京都',budget:'4〜6万円',focus:'寺社＋街歩き',vibe:'紅葉・カフェ・甘味',
+  why:'行きたい場所の選択肢が多く、好みに合わせて調整しやすいのが強み。紅葉や庭園を軸にしつつ、カフェや食べ歩きも組み込みやすい。1泊2日なら「東山エリア中心」か「嵐山中心」にすると移動を減らせます。',
+  days:[
+   {label:'DAY 1 · 11/21',title:'街歩きと夕方の景色',items:['午前：東京から京都へ。駅周辺で荷物を預ける','午後：嵐山エリア、または東山エリアを散策','夜：夕食＋開催状況を確認してライトアップへ']},
+   {label:'DAY 2 · 11/22',title:'庭園・喫茶・おみやげ',items:['朝：庭園や寺社を1か所じっくり見る','昼：湯豆腐・うどん・甘味など気分で選ぶ','午後：おみやげを買って新幹線で東京へ']}
+  ],
+  caution:'11月下旬の土曜は宿や人気スポットが混みやすい時期。ライトアップは開催日・予約条件を確認し、初日と2日目でエリアを分けると効率的。',
+  link:'https://global.kyoto.travel/en/faq/detail.php?faq_id=80',linkLabel:'京都へのアクセス（京都観光公式）'
+ },
+ hakone:{
+  id:'hakone',name:'箱根・伊豆',no:'PLAN 02 / HOT SPRING',emoji:'♨️',color:'#f8cfb8',
+  lead:'温泉をメインに、湖・海・ロープウェイ・海鮮などを組み合わせる。観光を詰めこみすぎないプラン。',
+  time:'約1.5〜2.5時間',route:'特急・在来線／エリアにより車',budget:'2.5〜4.5万円',focus:'温泉＋景色',vibe:'温泉・湖・海・乗り物',
+  why:'遠出の移動時間を短めにして、現地で過ごす時間を確保しやすい候補。箱根なら芦ノ湖・ロープウェイなどの乗り物、伊豆なら海岸や海鮮を組み合わせられます。1泊2日では箱根か伊豆のどちらかに絞るのがコツ。',
+  days:[
+   {label:'DAY 1 · 11/21',title:'景色を見て温泉へ',items:['箱根案：箱根湯本から芦ノ湖・海賊船などへ','伊豆案：海岸の景色や海鮮ランチを楽しむ','夕方：宿へチェックイン。温泉と夕食をゆっくり']},
+   {label:'DAY 2 · 11/22',title:'朝風呂＋寄り道',items:['朝：温泉・朝食を楽しんでチェックアウト','箱根案：美術館や散策スポットへ','伊豆案：海沿いの景色や道の駅へ。夕方東京へ']}
+  ],
+  caution:'「箱根」と「伊豆」は現地の移動範囲が違うため、同じ1泊2日で両方を回るより片方に絞るのがおすすめ。箱根はロープウェイ・船の運行、伊豆は電車の接続や車の有無を確認。',
+  link:'https://odakyu-global.com/passes/romancecar/',linkLabel:'ロマンスカー・箱根アクセス（小田急）'
+ },
+ kanazawa:{
+  id:'kanazawa',name:'金沢',no:'PLAN 03 / HOKURIKU',emoji:'🍣',color:'#d8d0ef',
+  lead:'市場の海鮮、茶屋街、庭園、和菓子。歩いて見て食べる時間をしっかり確保するプラン。',
+  time:'約2時間30分',route:'北陸新幹線／東京→金沢',budget:'3.5〜5万円',focus:'海鮮＋茶屋街',vibe:'食べ歩き・庭園・和菓子',
+  why:'近江町市場、ひがし茶屋街、金沢城公園、兼六園など、街歩きの目的を作りやすい候補。海鮮や和菓子が好きなら食事自体も旅の目的になります。1泊でも「食べる・歩く・見る」を組みやすいのがポイント。',
+  days:[
+   {label:'DAY 1 · 11/21',title:'市場と古い街並み',items:['午前：北陸新幹線で金沢へ','昼：近江町市場で海鮮ランチ・食べ歩き','午後〜夜：ひがし茶屋街を散策し、金沢市内に宿泊']},
+   {label:'DAY 2 · 11/22',title:'庭園とおみやげ',items:['朝：兼六園や金沢城公園を散策','昼：気になる店で金沢おでん・和菓子など','午後：駅でおみやげを買って東京へ']}
+  ],
+  caution:'市場や人気店は昼どきに混みやすいので、早めの昼食か予約可能な店を検討。主要スポットは徒歩とバスを組み合わせるため、行きたい場所を地図でまとめておくと移動しやすい。',
+  link:'https://visitkanazawa.jp/getting-to-kanazawa',linkLabel:'金沢へのアクセス（観光公式）'
+ },
+ nagano:{
+  id:'nagano',name:'長野・戸隠',no:'PLAN 04 / MOUNTAIN',emoji:'🌲',color:'#dce7ac',
+  lead:'杉並木の参道、そば、鏡池など。都市観光より自然の中で過ごす時間を重視するプラン。',
+  time:'約1.5時間＋現地移動',route:'北陸新幹線＋バス／レンタカー',budget:'2.5〜4.5万円',focus:'森＋神社',vibe:'自然・そば・ドライブ',
+  why:'観光地を巡るだけでなく、森の中を歩いたり景色を眺めたりする時間を作れる候補。戸隠そばも楽しみのひとつ。レンタカーがあれば立ち寄り先を調整しやすく、公共交通なら時刻に合わせた計画が必要です。',
+  days:[
+   {label:'DAY 1 · 11/21',title:'長野から戸隠へ',items:['朝：北陸新幹線で長野駅へ','昼：長野駅周辺または戸隠でそば','午後：戸隠神社や鏡池周辺を散策。長野市内・温泉地に宿泊']},
+   {label:'DAY 2 · 11/22',title:'もう少し自然か、街歩きか',items:['朝：天候を見て自然スポットを追加','昼：善光寺周辺で食事・散策','午後：長野駅へ戻り、新幹線で東京へ']}
+  ],
+  caution:'戸隠は長野駅からさらに移動が必要。公共交通で行く場合は帰りの便まで確認し、レンタカーなら当日の道路・天候をチェック。山側は平地より冷え込むため防寒も用意。',
+  link:'https://www.japan-guide.com/e/e6003.html',linkLabel:'長野へのアクセス・交通案内'
+ },
+ hiroshima:{
+  id:'hiroshima',name:'広島・宮島',no:'PLAN 05 / SETOUCHI',emoji:'⛴️',color:'#c5deec',
+  lead:'新幹線で遠くまで移動して、島の散策・神社・船・お好み焼きをまとめて楽しむプラン。',
+  time:'約4時間',route:'東海道・山陽新幹線／東京→広島',budget:'4.5〜6.5万円',focus:'宮島＋ご当地グルメ',vibe:'船・島歩き・街グルメ',
+  why:'宮島への船旅と島の散策、広島市内のグルメを1回の旅行に組み合わせられます。移動時間が長いぶん、朝早めに出ると現地で過ごす時間を確保しやすい。遠くへ来た実感も旅の大きな要素になります。',
+  days:[
+   {label:'DAY 1 · 11/21',title:'広島から宮島へ',items:['朝：東京から新幹線で広島へ（早めの出発がおすすめ）','昼〜午後：宮島へ移動し、厳島神社・島の商店街を散策','夕方：広島市内へ戻り、ホテルにチェックイン']},
+   {label:'DAY 2 · 11/22',title:'広島グルメと市内散策',items:['朝：平和記念公園周辺や市内を散策','昼：お好み焼きなど広島グルメ','午後：駅でおみやげを買って新幹線で東京へ']}
+  ],
+  caution:'往復の新幹線だけで長い時間を使うため、初日は朝早めに出発。宮島のフェリー時刻・施設の営業時間を確認し、島の滞在時間を先に決めると動きやすい。',
+  link:'https://www.japan-guide.com/e/e3404.html',linkLabel:'広島へのアクセス・交通案内'
+ }
+};
+const selected = new Set();
+let activePlace = null;
+const modal = document.getElementById('modal');
+function openPlace(id){
+ const p=places[id]; if(!p)return; activePlace=id;
+ document.getElementById('modalKicker').textContent=p.no;
+ document.getElementById('modalEmoji').textContent=p.emoji;
+ document.getElementById('modalTitle').textContent=p.name;
+ document.getElementById('modalLead').textContent=p.lead;
+ document.getElementById('modalTime').textContent=p.time;
+ document.getElementById('modalRoute').textContent=p.route;
+ document.getElementById('modalBudget').textContent=p.budget;
+ document.getElementById('modalFocus').textContent=p.focus;
+ document.getElementById('modalVibe').textContent=p.vibe;
+ document.getElementById('modalWhy').textContent=p.why;
+ document.getElementById('modalCaution').innerHTML='<b>CHECK BEFORE YOU GO</b><br>'+p.caution;
+ document.getElementById('modalTimeline').innerHTML=p.days.map(d=>`<article><div class="day-label">${d.label}</div><h4>${d.title}</h4><ul>${d.items.map(i=>`<li>${i}</li>`).join('')}</ul></article>`).join('');
+ const banner=document.getElementById('modalBanner');banner.style.background=p.color;
+ const link=document.getElementById('modalLink');link.href=p.link;link.textContent=p.linkLabel+' ↗';
+ updateModalFav();
+ modal.classList.add('open');document.body.style.overflow='hidden';
+ document.getElementById('modalClose').focus();
+}
+function closeModal(){modal.classList.remove('open');document.body.style.overflow='';activePlace=null}
+function updateModalFav(){
+ const b=document.getElementById('modalFav');if(!activePlace)return;
+ const on=selected.has(activePlace);b.classList.toggle('selected',on);b.textContent=on?'✓ 候補に追加済み（外す）':'＋ 気になるに追加';
+}
+function toggleSelect(id){
+ if(selected.has(id))selected.delete(id);else selected.add(id);
+ updateSelection();
+ if(activePlace===id)updateModalFav();
+}
+function updateSelection(){
+ document.querySelectorAll('[data-select]').forEach(b=>{
+  const on=selected.has(b.dataset.select);b.classList.toggle('selected',on);b.textContent=on?'✓ 候補に追加済み':'＋ 気になる';
+ });
+ const list=document.getElementById('selectedList');
+ document.getElementById('count').textContent=`${selected.size} / 5 選択中`;
+ if(!selected.size){list.innerHTML='<div class="empty-state">まだ候補はありません。カードから気になる場所を追加してみてください。</div>';return}
+ list.innerHTML=[...selected].map(id=>`<span class="selected-chip">${places[id].emoji} ${places[id].name}</span>`).join('');
+}
+document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>openPlace(b.dataset.open)));
+document.querySelectorAll('[data-select]').forEach(b=>b.addEventListener('click',()=>toggleSelect(b.dataset.select)));
+document.getElementById('modalFav').addEventListener('click',()=>{if(activePlace)toggleSelect(activePlace)});
+document.getElementById('modalClose').addEventListener('click',closeModal);
+document.getElementById('modalDone').addEventListener('click',closeModal);
+modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))closeModal()});
+document.getElementById('filters').addEventListener('click',e=>{
+ const btn=e.target.closest('[data-filter]');if(!btn)return;
+ document.querySelectorAll('.filter').forEach(b=>b.classList.toggle('active',b===btn));
+ const filter=btn.dataset.filter;
+ document.querySelectorAll('.trip-card').forEach(card=>{
+  const tags=card.dataset.tags.split(' ');
+  card.classList.toggle('hidden',filter!=='all'&&!tags.includes(filter));
+ });
+});
+function roulette(){
+ const ids=Object.keys(places);const id=ids[Math.floor(Math.random()*ids.length)];
+ const button=document.querySelector(`[data-open="${id}"]`);
+ document.getElementById('destinations').scrollIntoView({behavior:'smooth'});
+ setTimeout(()=>openPlace(id),450);
+}
+document.getElementById('copyBtn').addEventListener('click',async()=>{
+ const hint=document.getElementById('copyHint');
+ if(!selected.size){hint.textContent='先に気になる候補を追加してください。';return}
+ const names=[...selected].map(id=>places[id].name);
+ const text=`11/21（土）〜11/22（日）の旅行候補\n${names.map((n,i)=>`${i+1}. ${n}`).join('\n')}\n気になる候補を選んでみた！どこがよさそう？`;
+ try{
+  if(navigator.clipboard && window.isSecureContext){await navigator.clipboard.writeText(text);}
+  else{
+   const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();
+   const ok=document.execCommand('copy');ta.remove();if(!ok)throw new Error('copy failed');
+  }
+  hint.textContent='コピーしました。LINEのトークに貼り付けて共有できます。';
+  showToast('候補リストをコピーしました');
+ }catch(e){hint.textContent='コピーできない場合は、選択した候補名を手動でLINEに貼り付けてください。';}
+});
+document.getElementById('clearBtn').addEventListener('click',()=>{selected.clear();updateSelection();if(activePlace)updateModalFav();document.getElementById('copyHint').textContent='選択をリセットしました。'});
+let toastTimer;
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2200)}
+updateSelection();
+</script>
+</body>
+</html>
